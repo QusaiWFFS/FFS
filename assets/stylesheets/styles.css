@@ -3508,7 +3508,10 @@ input[type='range']::-ms-fill-lower {
 	border-radius: 0.5rem;
 	height: .75rem;
 }
-
+.logo-imgq {
+  width: 500px;
+  height: 500px; /* keeps aspect ratio */
+} 
 /* end range madness */
 .small-icon-bbb {
 	max-width: 250px;
