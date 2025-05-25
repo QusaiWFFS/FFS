@@ -271,13 +271,3 @@ window.onload = function(event)
 		scrollAnimated(window.location.hash, -125);
 	}
 };
-
-magicMouseOptions = {
-	"cursorOuter": "circle-basic",
-	"hoverEffect": "circle-move",
-	"hoverItemMove": false,
-	"defaultCursor": false,
-	"outerWidth": 30,
-	"outerHeight": 30,
-};
-magicMouse(magicMouseOptions);

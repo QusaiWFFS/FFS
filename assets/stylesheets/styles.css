@@ -121,12 +121,12 @@ section {
 .sections-bg i,
 .sections-bg span,
 .sections-bg h4 {
-  color: #ffffff !important;
+  color: var(--color-white) !important;
 }
 
 .section-header {
   text-align: center;
-  padding-bottom: 60px;
+  padding-bottom: 30px;
 }
 
 .section-header h2 {
@@ -200,28 +200,30 @@ section {
 # Scroll top button
 --------------------------------------------------------------*/
 .scroll-top {
-  position: fixed;
-  visibility: hidden;
-  opacity: 0;
-  right: 15px;
-  bottom: -15px;
-  z-index: 99999;
-  background: #00a651;
-  width: 44px;
-  height: 44px;
-  border-radius: 50px;
-  transition: all 0.4s;
+  display: none !important;
 }
 
-.scroll-top i {
-  font-size: 24px;
+.scroll-top i,
+.scroll-top:hover,
+.scroll-top.active {
+  display: none !important;
+}
+
+.scroll-text {
   color: #fff;
-  line-height: 0;
+  font-size: 14px;
+  display: none;
+  white-space: nowrap;
 }
 
 .scroll-top:hover {
-  background: rgba(0, 166, 81, 0.8);
-  color: #fff;
+  background: rgba(0, 166, 81, 0.9);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-top:hover .scroll-text {
+  display: inline;
 }
 
 .scroll-top.active {
@@ -353,7 +355,7 @@ section {
 .header {
   transition: all 0.5s;
   z-index: 997;
-  height: 80px;
+  height: 100px;  /* Increased to accommodate larger logo */
   position: relative;
   background: transparent;
 }
@@ -376,8 +378,8 @@ section {
 
 
 .header .logo img {
-  max-height: 65px;
-  max-width: 65px;
+  max-height: 120px;
+  max-width: 120px;
   margin-right: 6px;
 }
 
@@ -3508,14 +3510,22 @@ input[type='range']::-ms-fill-lower {
 	border-radius: 0.5rem;
 	height: .75rem;
 }
-.logo-imgq {
-  width: 500px;
-  height: 500px; /* keeps aspect ratio */
-} 
+
 /* end range madness */
-.small-icon-bbb {
-	max-width: 250px;
+.small-icon {
+  max-width: 500px !important;
+  height: auto !important;
 }
+
+/* .logo {
+  background-color: rgba(255, 0, 0, 0.1);
+} */
+
+
+.header .container {
+  flex-wrap: nowrap !important;
+}
+
 .bbb-div {
 	width: fit-content;
 	margin-inline: auto;

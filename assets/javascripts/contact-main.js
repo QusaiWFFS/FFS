@@ -1,8 +1,10 @@
 $(document).ready(function() {
 	var iframe = document.getElementById('reCaptchaIframe');
-	iframe.onload = function() {
-		console.log('Captcha iframe loaded...');
-	};
+	if (iframe) {
+		iframe.onload = function() {
+			console.log('Captcha iframe loaded...');
+		};
+	}
 
 	// debt_amount
 	const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -139,25 +141,26 @@ $(document).ready(function() {
 		try {
 			data = JSON.parse(event.data);
 		} catch (e) {
-			showCaptchaError();
+			return; // Silently fail if we can't parse the message
 		}
+		
+		var iframe = document.getElementById('reCaptchaIframe');
+		if (!iframe) return; // Exit if iframe doesn't exist
+
 		if (data.message == 'captchaResponse' && data.input) {
-			$message = "<input type=\'hidden\' name=\'g-recaptcha-response\' value=\'\" + token + \"\'>";
+			$message = "<input type='hidden' name='g-recaptcha-response' value='" + data.input + "'>";
 			$('#contactForm input[name="g-recaptcha-response"]').remove();
-			$('#contactForm').prepend("<input type=\'hidden\' name=\'g-recaptcha-response\' value=\'" + data.input + "\'>");
+			$('#contactForm').prepend($message);
 		}
-		if (data.message == 'sizeChange' && data.amount) {
+		if (data.message == 'sizeChange' && data.amount && iframe) {
 			iframe.style.height = data.amount + "px";
 			if ($('#reCaptchaIframe').css('transform') != null) {
-				//If the iframe has a transform on it we need to accomodate for that
-				var element = document.getElementById('reCaptchaIframe');
-				var scaleX = element.getBoundingClientRect().width / element.offsetWidth;
+				var scaleX = iframe.getBoundingClientRect().width / iframe.offsetWidth;
 				$('.submit-button').css('margin-top', (scaleX * data.amount) + "px");
 			} else {
 				$('.submit-button').css('margin-top', data.amount + "px");
 			}
 		}
-		return;
 	}
 
 	function showCaptchaError() {
