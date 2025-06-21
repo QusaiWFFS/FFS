@@ -45,7 +45,7 @@ $(document).ready(function() {
 		};
 
 		$.ajax({
-			url: "https://6ohn342ti7.execute-api.eu-north-1.amazonaws.com/v1/proxy-form-submission",
+			url: "https://6ohn342ti7.execute-api.eu-north-1.amazonaws.com/v1/form-submission",
 			type: "POST",
 			dataType: 'text', // Changed to text to inspect raw response
 			data: crmData,

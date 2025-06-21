@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 // Define the proxy endpoint
-app.post('/proxy-form-submission', async (req, res) => {
+app.post('/form-submission', async (req, res) => {
     const crmUrl = 'https://client.forthcrm.com/post/8b29992c2074cd372fb1a35d80cf0146edfa97a0/';
     
     // Map your frontend form fields to the CRM's expected parameters
