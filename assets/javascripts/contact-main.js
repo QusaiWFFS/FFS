@@ -1,12 +1,108 @@
-$(document).ready(function() {
-	var iframe = document.getElementById('reCaptchaIframe');
-	if (iframe) {
-		iframe.onload = function() {
-			console.log('Captcha iframe loaded...');
-		};
-	}
+console.log('DEBUG: contact-main.js file is loaded and parsed.');
 
-	// debt_amount
+$(document).ready(function() {
+	console.log('DEBUG: jQuery document is ready.');
+
+	$("#contactForm").on('submit', function(event) {
+		event.preventDefault(); // Crucial: Prevent default form submission
+		console.log('Form submission intercepted! Default prevented.');
+		
+		// For now, we will just log and not send AJAX request
+		// This is to confirm preventDefault is working.
+
+		// Swal.fire({
+		// 		title: 'Intercepted!',
+		// 		text: 'Form submission was intercepted by JavaScript.',
+		// 		icon: 'info',
+		// 		confirmButtonText: 'Okay'
+		// 	});
+
+		// Temporarily disable the rest of the form logic
+		$(':input[type="submit"]').prop('disabled', true);
+		$('#loading-overlay').show();
+
+		// Your AJAX call logic would go here once preventDefault is confirmed
+
+		// Example of re-enabling button and hiding overlay (commented out for now)
+		// $(this).find(':input[type="submit"]').prop('disabled', false);
+		// $('#loading-overlay').hide();
+
+		let formData = new FormData($(this)[0]);
+		let jsonData = {};
+		for (let pair of formData.entries()) {
+			jsonData[pair[0]] = pair[1];
+		}
+
+		// Map form data to CRM fields
+		let crmData = {
+			Email: jsonData.email,
+			Fname: jsonData.firstName,
+			Lname: jsonData.lastName,
+			Message: jsonData.message,
+			'Phone#': jsonData.phone,
+			State: jsonData.state,
+			Total_Unsecured_Debt: jsonData.debt_amount,
+		};
+
+		$.ajax({
+			url: "https://client.forthcrm.com/post/8b29992c2074cd372fb1a35d80cf0146edfa97a0/",
+			type: "POST",
+			dataType: 'text', // Changed to text to inspect raw response
+			data: crmData,
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8", // Changed to standard form encoding
+			cache: false,
+			processData: true, // Process data for standard form encoding
+			success: function(result) {
+				console.log('Raw CRM Response:', result);
+				let parsedResult;
+				try {
+					parsedResult = JSON.parse(result);
+				} catch (e) {
+					console.log('Could not parse CRM response as JSON, treating as text success.');
+					// If it's not JSON, but we got a response, assume success for now
+					parsedResult = { success: true, message: 'Form submitted successfully (raw response received).' };
+				}
+
+				if (parsedResult.success) {
+					Swal.fire({
+						title: 'Success!',
+						text: parsedResult.message || 'Your message has been sent successfully.',
+						icon: 'success',
+						confirmButtonText: 'Thank You'
+					});
+					// $("#contactForm")[0].reset();
+					$("#contactForm").html("<p>" + (parsedResult.message || 'Your message has been sent successfully.') + "</p>");
+				} else {
+					Swal.fire({
+						title: 'Error!',
+						text: parsedResult.message || 'There was an issue with your submission.',
+						icon: 'error',
+						confirmButtonText: 'Okay'
+					});
+				}
+				$('#loading-overlay').hide();
+				$(':input[type="submit"]').prop('disabled', false);
+			},
+			error: function(msg) {
+				console.log('AJAX error', msg);
+				$('#loading-overlay').hide();
+				$(':input[type="submit"]').prop('disabled', false);
+				Swal.fire({
+					title: 'Error!',
+					text: 'Oops! An error occurred during the request. Please try again later.',
+					icon: 'error',
+					confirmButtonText: 'Okay'
+				});
+			}
+		});
+	});
+
+
+	// The rest of the original script content (like debt slider, inactivity modal, formStep) 
+	// is being commented out for this test to minimize interference.
+
+	// Original debt_amount logic (commented out)
+	/*
 	const currencyFormatter = new Intl.NumberFormat('en-US', {
 		style:                 'currency',
 		currency:              'USD',
@@ -15,22 +111,21 @@ $(document).ready(function() {
 	});
 	$("#debt_amount").on('change', function() {$("#debt_amount_display").html(currencyFormatter.format(this.value));});
 	$("#debt_amount").on('input', function() {$("#debt_amount_display").html(currencyFormatter.format(this.value));});
+	*/
 
-	/**  >Only runs on Chromium<
-	 *  Chromium does not have a webkit for handling the progress range like mozilla's "-moz-range-progress"
-	 *  We will have to redefine the webkit CSS to handle individual browsers
-	 *  **/
-	// if (/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) {
-		$('.chrome input').on('input change', function () {
-			const value = (this.value - this.min) / (this.max - this.min) * 100;
-			$(this).css('background', 'linear-gradient(to right, #00a651 ' + value + '%, #fff ' + value + '%)');
-			$(this).css('border-radius', '0.5rem');
-			$(this).css('height', '.60rem');
-		});
-		$('#debt_amount').change();
-	// };
+	// Original Chromium range progress (commented out)
+	/*
+	$('.chrome input').on('input change', function () {
+		const value = (this.value - this.min) / (this.max - this.min) * 100;
+		$(this).css('background', 'linear-gradient(to right, #00a651 ' + value + '%, #fff ' + value + '%)');
+		$(this).css('border-radius', '0.5rem');
+		$(this).css('height', '.60rem');
+	});
+	$('#debt_amount').change();
+	*/
 
-	// state TODO
+	// Original state TODO (commented out)
+	/*
 	// if (window.navigator.geolocation) {
 	// 	window.navigator.geolocation.getCurrentPosition(console.log, setStateVal(false));
 	// }
@@ -38,102 +133,10 @@ $(document).ready(function() {
 	// {
 	// 	if(!val) return;
 	// }
+	*/
 
-	$("#contactForm").validate({
-								   rules: {
-									   fullname: "required",
-									   phone: {
-										   required: true,
-										   digits: true,
-										   minlength: 10,
-										   maxlength: 10,
-									   },
-									   email: {
-										   required: true,
-										   email: true
-									   },
-									   debt_amount: "required",
-									   state: "required",
-									   agree: "required",
-									   'g-recaptcha-response': "required",
-								   },
-								   // form error message (notify your visitor about their mistake)
-								   messages: {
-									   fullname: "Please enter your name",
-									   phone: {
-										   required: "Please enter a valid phone number",
-										   digits: "Only numbers allowed 0-9",
-										   minlength: "Phone number should be 10 numbers",
-										   maxlength: "Phone number should be 10 numbers",
-									   },
-									   email: "Please enter a valid email address",
-									   debt_amount: "Please select an amount",
-									   state: "Please select your state",
-									   agree: "Please accept the terms of use",
-									   'g-recaptcha-response': "reCaptcha is not checked",
-								   },
-								   errorPlacement: function(error, element) {
-									   if(element[0].id == 'agree')
-									   {
-										   element = element.parent().parent();
-									   }
-									   var newelement = element.next('.help-block');
-									   newelement.html(error);
-								   },
-								   submitHandler: function() {
-									   $(':input[type="submit"]').prop('disabled', true);
-									   $('#loading-overlay').show();
-									   let formData = new FormData($('#contactForm')[0]);
-									   $.ajax({
-												  url: "assets/email/send.php",
-												  type: "POST",
-												  dataType: 'json',
-												  data: formData,
-												  contentType: false,
-												  cache: false,
-												  processData: false,
-												  success: function(result) {
-													  console.log(result);
-													  if (result.success) {
-														  Swal.fire({
-																		title: 'Success!',
-																		text: result.message,
-																		icon: 'success',
-																		confirmButtonText: 'Thank You'
-																	});
-														  // $("#contactForm")[0].reset();
-														  $("#contactForm").html("<p>" + result.message + "</p>");
-													  } else {
-														  Swal.fire({
-																		title: 'Error!',
-																		text: result.message,
-																		icon: 'error',
-																		confirmButtonText: 'Okay'
-																	});
-													  }
-													  $('#loading-overlay').hide();
-													  $(':input[type="submit"]').prop('disabled', false);
-												  },
-												  error: function(msg) {
-													  console.log('error', msg);
-													  $('#loading-overlay').hide();
-													  $(':input[type="submit"]').prop('disabled', false);
-													  Swal.fire({
-																	title: 'Error!',
-																	text: 'Oops! An error occurred, please try again later.',
-																	icon: 'error',
-																	confirmButtonText: 'Okay'
-																});
-												  }
-											  });
-								   }
-							   });
-
-	$('.floating-input, .floating-select, .ctminpt').on('focusout', function() {
-		$(this).valid();
-	});
-
-	//Get postmessage from Captcha iframe
+	// Original Captcha iframe handling (commented out)
+	/*
 	window.addEventListener("message", captchaResponse, false);
 
 	function captchaResponse(event) {
@@ -169,7 +172,84 @@ $(document).ready(function() {
 		$.modal.close();
 		console.log("Error receiving message from the Captcha iframe.");
 	}
+	*/
 
+	// Original inactivityModal and timer (commented out)
+	/*
+	function inactivityModal() {
+		Swal.fire({
+			title: '<h1 class="swal2-title" style="	margin-top: 0;padding-top: 0;">Still there?</h1><br/>Give us a call at <u style="text-wrap: nowrap;">(888) 915-4090</u> to see how we can help!',
+			icon: 'question',
+			width: 'fit-content',
+			html: `<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="content ps-0" data-aos="fade-left">
+							<ul class="bbb-ul">
+						<li>
+									<i class="bi bi-check-circle-fill"></i>
+							<span>FREE consultation</span>
+						</li>
+						<li>
+									<i class="bi bi-check-circle-fill"></i>
+							<span>NO upfront enrollment fees and no obligation</span>
+						</li>
+						<li>
+									<i class="bi bi-check-circle-fill"></i>
+							<span>FREE savings estimates</span>
+						</li>
+						<li>
+									<i class="bi bi-check-circle-fill"></i>
+							<span>Get out of debt without bankruptcy</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+				</div>
+			</div>`,
+			showConfirmButton: false,
+			showCloseButton: true,
+			showCancelButton: false,
+			focusConfirm: false
+		})
+
+		document.removeEventListener("mousemove", resetTimer);
+		document.removeEventListener("keydown", resetTimer);
+		document.removeEventListener("mousedown", resetTimer);
+		document.removeEventListener("touchstart", resetTimer);
+	}
+
+	let inactivityTimer;
+
+	function resetTimer() {
+		clearTimeout(inactivityTimer);
+		inactivityTimer = setTimeout(inactivityModal, 120 * 1000);
+	}
+
+	document.addEventListener("mousemove", resetTimer);
+	document.addEventListener("keydown", resetTimer);
+	document.addEventListener("mousedown", resetTimer);
+	document.addEventListener("touchstart", resetTimer);
+	*/
+
+	// Original anchor scroll (commented out)
+	/*
+	document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener('click', function (e) {
+			e.preventDefault();
+			const target = document.querySelector(this.getAttribute('href'));
+			if (target) {
+				target.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+			}
+		});
+	});
+	*/
+
+	// Original formStep logic (commented out)
+	/*
 	let step = 1;
 	function formStep(direction = 1) {
 		if(
@@ -216,5 +296,6 @@ $(document).ready(function() {
 	$('#form_back_button2').click(function() { formStep(-1); });
 	$('#form_next_button').click(function() { formStep(1); });
 	formStep(0);
+	*/
 
 });
