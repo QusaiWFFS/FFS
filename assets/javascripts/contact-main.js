@@ -45,7 +45,7 @@ $(document).ready(function() {
 		};
 
 		$.ajax({
-			url: "https://client.forthcrm.com/post/8b29992c2074cd372fb1a35d80cf0146edfa97a0/",
+			url: "https://6ohn342ti7.execute-api.eu-north-1.amazonaws.com/v1/proxy-form-submission",
 			type: "POST",
 			dataType: 'text', // Changed to text to inspect raw response
 			data: crmData,
@@ -70,8 +70,7 @@ $(document).ready(function() {
 						icon: 'success',
 						confirmButtonText: 'Thank You'
 					});
-					// $("#contactForm")[0].reset();
-					$("#contactForm").html("<p>" + (parsedResult.message || 'Your message has been sent successfully.') + "</p>");
+					$("#contactForm")[0].reset();
 				} else {
 					Swal.fire({
 						title: 'Error!',
