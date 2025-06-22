@@ -116,7 +116,7 @@ $(document).ready(function() {
 	/*
 	$('.chrome input').on('input change', function () {
 		const value = (this.value - this.min) / (this.max - this.min) * 100;
-		$(this).css('background', 'linear-gradient(to right, #00a651 ' + value + '%, #fff ' + value + '%)');
+		$(this).css('background', 'linear-gradient(to right, #004845 ' + value + '%, #fff ' + value + '%)');
 		$(this).css('border-radius', '0.5rem');
 		$(this).css('height', '.60rem');
 	});
