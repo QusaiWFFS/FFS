@@ -18,17 +18,18 @@ app.use((req, res, next) => {
 
 // Define the proxy endpoint
 app.post('/form-submission', async (req, res) => {
+    console.log('Raw Request Body:', req.body);
     const crmUrl = 'https://client.forthcrm.com/post/8b29992c2074cd372fb1a35d80cf0146edfa97a0/';
     
     // Map your frontend form fields to the CRM's expected parameters
     const formData = {
-        'Email': req.body.email, // Assuming your frontend sends 'email'
-        'Fname': req.body.firstName, // Assuming your frontend sends 'firstName'
-        'Lname': req.body.lastName, // Assuming your frontend sends 'lastName'
-        'Message': req.body.message, // Assuming your frontend sends 'message'
-        'Phone#': req.body.phone, // Assuming your frontend sends 'phone'
-        'State': req.body.state, // Assuming your frontend sends 'state'
-        'Total_Unsecured_Debt': req.body.totalDebt // Assuming your frontend sends 'totalDebt'
+        'Email': req.body.Email,
+        'Fname': req.body.Fname,
+        'Lname': req.body.Lname,
+        'Message': req.body.Message,
+        'Phone#': req.body['Phone#'],
+        'State': req.body.State,
+        'Total_Unsecured_Debt': req.body.Total_Unsecured_Debt
     };
 
     console.log('Received form data:', req.body);
