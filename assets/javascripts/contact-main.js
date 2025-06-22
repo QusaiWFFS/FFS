@@ -59,14 +59,14 @@ $(document).ready(function() {
 					parsedResult = JSON.parse(result);
 				} catch (e) {
 					console.log('Could not parse CRM response as JSON, treating as text success.');
-					// If it's not JSON, but we got a response, assume success for now
-					parsedResult = { success: true, message: 'Form submitted successfully (raw response received).' };
+					// If it's not JSON, but we got a response, assume success and use a generic message
+					parsedResult = { success: true, message: 'Your inquiry has been successfully sent. Thank you!' };
 				}
 
 				if (parsedResult.success) {
 					Swal.fire({
 						title: 'Success!',
-						text: parsedResult.message || 'Your message has been sent successfully.',
+						text: parsedResult.message,
 						icon: 'success',
 						confirmButtonText: 'Thank You'
 					});
