@@ -18,21 +18,36 @@ app.use((req, res, next) => {
 
 // Define the proxy endpoint
 app.post('/form-submission', async (req, res) => {
-    console.log('Raw Request Body:', req.body);
+    // Ensure req.body is handled correctly whether it's a string or Buffer
+    let requestBodyString = req.body;
+    if (Buffer.isBuffer(req.body)) {
+        requestBodyString = req.body.toString();
+    }
+
+    const parsedBody = new URLSearchParams(requestBodyString);
+
+    // Convert URLSearchParams to a plain object for easier access and logging
+    const parsedData = {};
+    for (const [key, value] of parsedBody.entries()) {
+        parsedData[key] = value;
+    }
+
+    console.log('Raw Request Body:', requestBodyString);
+    console.log('Parsed Request Data:', parsedData);
+    
     const crmUrl = 'https://client.forthcrm.com/post/8b29992c2074cd372fb1a35d80cf0146edfa97a0/';
     
     // Map your frontend form fields to the CRM's expected parameters
     const formData = {
-        'Email': req.body.Email,
-        'Fname': req.body.Fname,
-        'Lname': req.body.Lname,
-        'Message': req.body.Message,
-        'Phone#': req.body['Phone#'],
-        'State': req.body.State,
-        'Total_Unsecured_Debt': req.body.Total_Unsecured_Debt
+        'Email': parsedData.Email,
+        'Fname': parsedData.Fname,
+        'Lname': parsedData.Lname,
+        'Message': parsedData.Message,
+        'Phone#': parsedData['Phone#'],
+        'State': parsedData.State,
+        'Total_Unsecured_Debt': parsedData.Total_Unsecured_Debt
     };
 
-    console.log('Received form data:', req.body);
     console.log('Sending to CRM:', formData);
 
     try {

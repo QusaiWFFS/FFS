@@ -33,6 +33,9 @@ $(document).ready(function() {
 			jsonData[pair[0]] = pair[1];
 		}
 
+		// Explicitly get the value of the debt amount input
+		jsonData.debt_amount = $("#debt_amount").val();
+
 		// Map form data to CRM fields
 		let crmData = {
 			Email: jsonData.email,
